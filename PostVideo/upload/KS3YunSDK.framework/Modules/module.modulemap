@@ -1,0 +1,6 @@
+framework module KS3YunSDK {
+  umbrella header "KS3YunSDK.h"
+
+  export *
+  module * { export * }
+}
