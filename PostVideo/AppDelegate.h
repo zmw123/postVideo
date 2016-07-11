@@ -7,12 +7,12 @@
 //
 
 #import <UIKit/UIKit.h>
-#import "PlayerView.h"
+#import "MaxPlayerView.h"
 
 @interface AppDelegate : UIResponder <UIApplicationDelegate>
 
 @property (strong, nonatomic) UIWindow *window;
-@property (strong, nonatomic) PlayerView *playerView;
+@property (strong, nonatomic) MaxPlayerView *playerView;
 
 @end
 

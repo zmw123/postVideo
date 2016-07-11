@@ -8,7 +8,6 @@
 
 #import "TableViewController.h"
 #import <MobileCoreServices/MobileCoreServices.h>
-#import "KSYPlayerVC.h"
 #import "PlayerViewController.h"
 #import <KS3YunSDK/KS3YunSDK.h>
 #import <AssetsLibrary/AssetsLibrary.h>
@@ -16,6 +15,7 @@
 #import "UploadTableViewController.h"
 #import <KS3YunSDK/KS3ConvertVideoRequest.h>
 #import "KS3Util.h"
+#import <AVFoundation/AVFoundation.h>
 
 #define kBucketName @"testatm"
 
@@ -164,15 +164,18 @@
     return cell;
 }
 
+//#define TESTCONVERT
+
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
     KS3ObjectSummary *object = self.objects[indexPath.row];
     NSString *path = [NSString stringWithFormat:@"http://%@/%@/%@", [[KS3Client initialize] getBucketDomain], kBucketName, object.Key];
     NSURL *url = [NSURL URLWithString:path];
     
+#ifdef TESTCONVERT
     //转码测试
     [MultiUploadModel convertVideo:kBucketName fileName:object.Key fileUrl:nil];
-    
+#endif
     //播放
     PlayerViewController *vc = [[PlayerViewController alloc] initWithUrl:url];
     vc.url = url;

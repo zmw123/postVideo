@@ -7,11 +7,14 @@
 //
 
 #import "PlayerViewController.h"
-#import "PlayerView.h"
 #import <Masonry.h>
 #import "AppDelegate.h"
-@interface PlayerViewController()<PlayerViewDelegate>
-@property (strong, nonatomic) PlayerView *playerView;
+#import "MaxPlayerView.h"
+
+
+@interface PlayerViewController()
+
+@property (strong, nonatomic) MaxPlayerView *maxView;
 @property (strong, nonatomic) NSArray *data;
 @end
 @implementation PlayerViewController
@@ -28,29 +31,50 @@
 {
     [super viewDidLoad];
     self.view.backgroundColor = [UIColor whiteColor];
-    self.playerView = [[PlayerView alloc] initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, self.view.frame.size.width) url:self.url];
-    self.playerView.delegate = self;
-    self.playerView.showVC = self;
-    [self.view addSubview:self.playerView];
+    
+    self.maxView = [[MaxPlayerView alloc] initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, self.view.frame.size.width) url:self.url];
+    self.maxView.showVC = self;
+    __weak typeof(self) weakSelf = self;
+    self.maxView.videoPlayerGoBackBlock = ^{
+        __strong typeof(self) strongSelf = weakSelf;
+        
+        [[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleDefault];
+        
+        [weakSelf dismissViewControllerAnimated:YES completion:^{
+            
+        }];
+        [strongSelf.navigationController setNavigationBarHidden:NO animated:YES];
+        
+        [[NSUserDefaults standardUserDefaults] setObject:@0 forKey:@"ZXVideoPlayer_DidLockScreen"];
+        
+        strongSelf.maxView = nil;
+    };
+    
+    self.maxView.videoPlayerWillChangeToOriginalScreenModeBlock = ^(){
+        NSLog(@"切换为竖屏模式");
+    };
+    self.maxView .videoPlayerWillChangeToFullScreenModeBlock = ^(){
+        NSLog(@"切换为全屏模式");
+    };
+    [self.maxView showInView:self.view];
     
     AppDelegate *del = [UIApplication sharedApplication].delegate;
-    del.playerView = self.playerView;
+    del.playerView = self.maxView;
 }
 
-- (void)playerView:(PlayerView *)view clickBack:(UIButton *)btn
+- (void)play
 {
-    [view removeFromSuperview];
-    self.playerView = nil;
-    [self dismissViewControllerAnimated:YES completion:^{
-        
-    }];
+    self.maxView = [[MaxPlayerView alloc] initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, self.view.frame.size.width) url:self.url];
+    self.maxView.showVC = self;
+    [self.maxView showInView:self.view];
 }
+
 
 -(UIInterfaceOrientationMask)supportedInterfaceOrientations
 {
-    if (self.playerView)
+    if (self.maxView)
     {
-        return self.playerView.supportInterOrtation;
+        return self.maxView.supportInterOrtation;
     }
     else
     {
